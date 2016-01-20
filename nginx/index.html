@@ -32,13 +32,12 @@
   <div class="row">
 	  <div class="col-xs-12 col-sm-6 col-md-8">
 		  <h2> /v1/logs</h2>
-		    <table class="table table-bordered">
+		    <table class="table table-bordered" id="log-table">
 			  <tr><th>Timestamp</th> <th>IP</th></tr>
-			  <tr id = "log"></tr>
 			</table>
 
 		  <h2> /v1/hell-world/logs</h2>
-		    <table class="table table-bordered">
+		    <table class="table table-bordered" id="hello-log-table">
 			  <th>Timestamp</th> <th>IP</th>
 			  <tr id = "hello-log"></tr>
 			</table>
@@ -50,29 +49,31 @@
     <!-- Latest compiled and minified JavaScript -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 	<script>
+	
 		$.ajax({ url:"http://127.0.0.1:5000/v1/logs",
           type:"GET",
-          data: {
-		      format: 'json'
-		   },
+		   dataType:"json",
          success:function(data){
-         		var logset = data.logset
-         		var row = "<td><p id=\"log-timestamp\">" + logset[0].logs[0].timestamp + "</p></td><td><p id=\"log-ip\">" + logset[0].logs[0].ip + "</p></td>" 
-				$("#log").html( row);
+         		var logset = data.logset;
+         		for (var i=0; i<logset.length; i++) {
+			var row = "<tr><td><p id=\"log-timestamp\">" + logset[i].logs.timestamp + "</p></td><td><p id=\"log-ip\">" + logset[i].logs.ip + "</p></td></style>tr>"; 
+				$("#log-table").append( row);
+			}
 			},
 			error: function() {
 				 $("#ip").html("fail"); 
 			}
 	});
+		
 				$.ajax({ url:"http://127.0.0.1:5000/v1/hello-world/logs",
           type:"GET",
-          data: {
-		      format: 'json'
-		   },
+		   dataType:"json",
          success:function(data){
-         		var logs = data.logs
-         		var row = "<td><p id=\"log-timestamp\">" + logs[0].timestamp + "</p></td><td><p id=\"log-ip\">" + logs[0].ip + "</p></td>" 
-				$("#hello-log").html( row);
+         		var logs = data.logs;
+         		for (var i=0; i<logs.length; i++) {
+			var row = "<tr><td><p id=\"log-timestamp\">" + logs[i].timestamp + "</p></td><td><p id=\"log-ip\">" + logs[i].ip + "</p></td></style>tr>"; 
+				$("#hello-log-table").append( row);
+			}
 			},
 			error: function() {
 				 $("#ip").html("fail"); 
