@@ -1,11 +1,11 @@
 #!flask/bin/python
 import time
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Response
 from redis import Redis
 import redis, json
 app = Flask(__name__)
-r = redis.StrictRedis(host='172.17.0.4', port=6379, db=0)
-#r = Redis(host='redis', port=6379)
+#r = redis.StrictRedis(host='172.17.0.4', port=6379, db=0)
+r = Redis(host='redis', port=6379)
 
 @app.route('/v1/hello-world', methods=['GET'])
 @app.route('/v1/hello-world/', methods=['GET'])
@@ -14,6 +14,11 @@ def hello_world():
     ip = request.remote_addr
     r.sadd("logging-test", {'endpoint': 'hello-world', 'timestamp': timestamp, 'ip': ip})
     return jsonify({"message": "hello world"})
+
+@app.route('/v1/del', methods=['GET'])
+def del_log():
+    r.spop("logging-test")
+    return "deleted"
 
 @app.route('/v1/logs', methods=['GET'])
 @app.route('/v1/logs/', methods=['GET'])
@@ -26,6 +31,8 @@ def logs():
         logs={"ip": json_log["ip"], "timestamp": json_log["timestamp"]}
         endpoint = {"endpoint": json_log["endpoint"], "logs": logs}
         logset.append(endpoint)
+    #resp = Response(response=jsonify({"logset": logset}), status=200, mimetype="application/json")
+    #return resp
     return jsonify({"logset": logset})
 
 @app.route('/v1/hello-world/logs', methods=['GET'])
