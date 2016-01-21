@@ -31,19 +31,17 @@ def logs():
         logs={"ip": json_log["ip"], "timestamp": json_log["timestamp"]}
         endpoint = {"endpoint": json_log["endpoint"], "logs": logs}
         logset.append(endpoint)
-    #resp = Response(response=jsonify({"logset": logset}), status=200, mimetype="application/json")
-    #return resp
     return jsonify({"logset": logset})
 
-@app.route('/v1/hello-world/logs', methods=['GET'])
-@app.route('/v1/hello-world/logs/', methods=['GET'])
-def hello_world_logs():
+@app.route('/v1/<endpoint>/logs', methods=['GET'])
+@app.route('/v1/<endpoint>/logs/', methods=['GET'])
+def hello_world_logs(endpoint):
     logs = []
     logging = r.smembers('logging-test')
     for log in logging:
         log= log.replace("'", '"')
         json_log = json.loads(log)
-        if json_log["endpoint"]=="hello-world":
+        if json_log["endpoint"]==endpoint:
             logs.append({"ip": json_log["ip"], "timestamp": json_log["timestamp"]})
     return jsonify({"logs": logs})
 
